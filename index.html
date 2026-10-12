@@ -2,13 +2,13 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JYNG JUNG - Sip joy, every day.</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font: Prompt -->
+    <!-- Prompt Font -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
@@ -17,10 +17,11 @@
                     colors: {
                         brand: {
                             orange: '#FF6B00',
-                            orangeLight: '#FF8533',
-                            blue: '#0A529C',
-                            blueDark: '#073B70',
-                            lightBg: '#F8FAFC',
+                            'orange-light': '#FFF0E6',
+                            blue: '#0F62AC',
+                            'blue-dark': '#094175',
+                            gray: '#718096',
+                            bg: '#F8FAFC'
                         }
                     },
                     fontFamily: {
@@ -31,1005 +32,795 @@
         }
     </script>
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        .badge-pulse { animation: pulse 1.5s infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(1.05); }
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #FF6B00; border-radius: 4px; }
+        body { font-family: 'Prompt', sans-serif; background-color: #F8FAFC; -webkit-tap-highlight-color: transparent; }
+        .badge-popular { background: linear-gradient(135deg, #FF6B00 0%, #FF8800 100%); }
+        .pb-mobile-safe { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-brand-bg text-gray-800 pb-mobile-safe">
 
-    <header class="sticky top-0 z-40 bg-white shadow-md border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('menu')">
-                <div class="w-12 h-12 bg-brand-orange rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 transform transition hover:scale-105">
-                    <span class="text-white text-2xl font-bold font-sans">U</span>
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchTab('menu')">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-brand-orange rounded-2xl flex items-center justify-center text-white font-black text-xl sm:text-2xl shadow-md shadow-orange-500/20">
+                    U
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black text-brand-blue tracking-tight leading-none">JYNG JUNG</h1>
-                    <p class="text-xs font-medium text-slate-500 mt-0.5">Sip joy, every day.</p>
+                    <h1 class="text-xl sm:text-2xl font-black text-brand-blue tracking-tight leading-none">JYNG JUNG</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-500 font-medium tracking-wide">Sip joy, every day.</p>
                 </div>
             </div>
 
-            <!-- Navigation Buttons -->
-            <nav class="hidden md:flex items-center space-x-6 font-medium text-slate-600">
-                <button onclick="switchTab('menu')" id="nav-menu" class="hover:text-brand-orange transition flex items-center space-x-2 text-brand-orange font-semibold">
-                    <i class="fa-solid font-bold fa-utensils"></i><span>เมนูเครื่องดื่ม</span>
-                </button>
-                <button onclick="switchTab('queue')" id="nav-queue" class="hover:text-brand-orange transition flex items-center space-x-2 relative">
-                    <i class="fa-solid fa-list-check"></i><span>สถานะคิว / ออเดอร์</span>
-                    <span id="active-queue-badge" class="hidden absolute -top-2 -right-3 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold badge-pulse">!</span>
-                </button>
-                <button onclick="toggleAdminPanel()" class="hover:text-brand-blue transition text-slate-500 flex items-center space-x-1 bg-slate-100 px-3 py-1.5 rounded-lg text-sm">
-                    <i class="fa-solid fa-user-gear text-brand-orange"></i><span>จำลองฝั่งร้าน (Barista)</span>
-                </button>
-            </nav>
-
-            <!-- Cart Icon Button -->
-            <div class="flex items-center space-x-3">
-                <button onclick="openCartModal()" class="relative bg-brand-orange text-white p-3 rounded-2xl shadow-md hover:bg-brand-orangeLight transition flex items-center justify-center">
-                    <i class="fa-solid fa-basket-shopping text-lg"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-brand-blue text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow">0</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Nav Bar -->
-        <div class="md:hidden flex border-t border-slate-200 bg-white text-xs font-medium divide-x divide-slate-100 text-slate-600 text-center">
-            <button onclick="switchTab('menu')" class="flex-1 py-2.5 flex flex-col items-center space-y-1 hover:text-brand-orange">
-                <i class="fa-solid fa-mug-hot text-base"></i><span>เมนู</span>
-            </button>
-            <button onclick="switchTab('queue')" class="flex-1 py-2.5 flex flex-col items-center space-y-1 relative hover:text-brand-orange">
-                <i class="fa-solid fa-clock-rotate-left text-base"></i><span>สถานะคิว</span>
-                <span id="mobile-queue-dot" class="hidden absolute top-1 right-8 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-            </button>
-            <button onclick="toggleAdminPanel()" class="flex-1 py-2.5 flex flex-col items-center space-y-1 text-slate-500">
-                <i class="fa-solid fa-store text-base text-brand-orange"></i><span>ร้านค้า</span>
+            <button onclick="openCartModal()" class="relative bg-brand-blue text-white p-2.5 rounded-xl hover:bg-brand-blue-dark transition shadow-md shadow-blue-500/20 active:scale-95">
+                <i class="fa-solid fa-basket-shopping text-lg"></i>
+                <span id="cart-badge" class="hidden absolute -top-1.5 -right-1.5 bg-brand-orange text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white">0</span>
             </button>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- View 1: Menu View -->
-        <section id="view-menu" class="space-y-8">
-            <!-- Hero Banner -->
-            <div class="relative bg-gradient-to-r from-brand-blue to-brand-blueDark rounded-3xl p-6 sm:p-10 text-white shadow-xl overflow-hidden flex flex-col sm:flex-row items-center justify-between">
-                <div class="z-10 max-w-lg text-center sm:text-left">
-                    <span class="bg-brand-orange text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block">พร้อมเสิร์ฟความสดชื่น</span>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-2">เติมความสุขได้ทุกวัน<br><span class="text-brand-orange">JYNG JUNG</span> ชานม & กาแฟสด</h2>
-                    <p class="text-slate-200 text-sm sm:text-base mb-6 font-light">สั่งง่ายผ่านเว็บ เลือกระดับความหวานและท็อปปิ้งได้ตามใจ พร้อมระบบแจ้งเตือนคิวเรียลไทม์!</p>
-                    <a href="#popular-section" class="inline-flex items-center space-x-2 bg-white text-brand-blue font-bold px-6 py-3 rounded-xl shadow hover:bg-slate-100 transition transform hover:-translate-y-0.5">
-                        <span>ดูเมนูยอดฮิต</span>
-                        <i class="fa-solid fa-arrow-down text-brand-orange"></i>
-                    </a>
-                </div>
-                <div class="mt-6 sm:mt-0 z-10 flex space-x-4">
-                    <div class="w-32 h-44 sm:w-40 sm:h-52 bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-center flex flex-col items-center justify-center transform -rotate-3 shadow-lg">
-                        <span class="text-5xl mb-2">🧋</span>
-                        <span class="font-bold text-sm">ชานมไต้หวัน</span>
-                        <span class="text-xs text-brand-orange font-semibold">เมนูขายดี #1</span>
-                    </div>
-                    <div class="w-32 h-44 sm:w-40 sm:h-52 bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-center flex flex-col items-center justify-center transform rotate-3 shadow-lg">
-                        <span class="text-5xl mb-2">🥤</span>
-                        <span class="font-bold text-sm">ชาไทยเข้มข้น</span>
-                        <span class="text-xs text-brand-orange font-semibold">เมนูขายดี #2</span>
-                    </div>
-                </div>
-                <!-- Background overlay shapes -->
-                <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-brand-orange/20 rounded-full blur-2xl"></div>
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 pt-4 sm:pt-6">
+
+        <!-- Banner -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-blue to-blue-700 text-white p-5 sm:p-8 mb-6 shadow-xl shadow-blue-900/10">
+            <div class="relative z-10 max-w-md">
+                <span class="inline-block bg-white/20 backdrop-blur-md text-white text-[11px] sm:text-xs px-3 py-1 rounded-full mb-2 font-medium">✨ สั่งออนไลน์ ชำระผ่าน QR ได้สะดวก</span>
+                <h2 class="text-xl sm:text-3xl font-bold mb-1.5 leading-snug">เติมความสดชื่น ได้ทุกวันกับ JYNG JUNG</h2>
+                <p class="text-blue-100 text-xs sm:text-sm mb-4">เลือกระดับความหวานตามใจชอบ พร้อมเสิร์ฟความอร่อยถึงมือคุณ</p>
+                <a href="#menu-section" class="inline-flex items-center gap-2 bg-brand-orange text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-lg active:scale-95 transition">
+                    สั่งเลยตอนนี้ <i class="fa-solid fa-arrow-right"></i>
+                </a>
             </div>
-
-            <!-- Popular / Recommended Section -->
-            <div id="popular-section" class="scroll-mt-24">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h3 class="text-2xl font-bold text-slate-800 flex items-center space-x-2">
-                            <span class="text-brand-orange text-2xl">🔥</span>
-                            <span>เมนูยอดฮิต (Recommended)</span>
-                        </h3>
-                        <p class="text-sm text-slate-500">ชาสูตรพิเศษ รสชาติเข้มข้น หอมนุ่ม กลมกล่อม</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="popular-items-grid">
-                    <!-- Populated dynamically via JavaScript -->
-                </div>
+            <div class="absolute -right-6 -bottom-10 opacity-20 sm:opacity-30 text-white text-[140px] sm:text-[180px] pointer-events-none">
+                <i class="fa-solid fa-mug-hot"></i>
             </div>
+        </div>
 
-            <!-- All Categories Filter & Menu Grid -->
-            <div>
-                <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
-                    <h3 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
-                        <i class="fa-solid fa-mug-saucer text-brand-blue"></i>
-                        <span>เมนูทั้งหมด (All Drinks)</span>
-                    </h3>
-                    <div class="flex space-x-2 overflow-x-auto pb-2 w-full sm:w-auto" id="category-filters">
-                        <button onclick="filterCategory('all')" class="cat-btn active px-4 py-2 rounded-xl text-sm font-semibold transition bg-brand-orange text-white">ทั้งหมด</button>
-                        <button onclick="filterCategory('tea')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-slate-200 text-slate-600 hover:border-brand-orange">ชา & ชานม</button>
-                        <button onclick="filterCategory('coffee')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-slate-200 text-slate-600 hover:border-brand-orange">กาแฟสด</button>
-                        <button onclick="filterCategory('refresh')" class="cat-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-white border border-slate-200 text-slate-600 hover:border-brand-orange">สมูทตี้ & เครื่องดื่มโซดา</button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="all-items-grid">
-                    <!-- Populated dynamically via JavaScript -->
-                </div>
-            </div>
-        </section>
-
-        <!-- View 2: Live Queue Status & Tracker -->
-        <section id="view-queue" class="hidden space-y-6">
-            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border border-slate-100">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
-                    <div>
-                        <h2 class="text-2xl font-bold text-slate-800">ติดตามสถานะออเดอร์</h2>
-                        <p class="text-sm text-slate-500">ระบบอัปเดตสถานะการชงสดใหม่เรียลไทม์</p>
-                    </div>
-                    <button onclick="switchTab('menu')" class="text-sm font-semibold text-brand-orange hover:underline flex items-center space-x-1">
-                        <i class="fa-solid fa-plus"></i><span>สั่งเพิ่ม</span>
-                    </button>
-                </div>
-
-                <!-- Active Order Queue Card -->
-                <div id="no-active-queue" class="text-center py-12">
-                    <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400 text-3xl mb-4">
-                        <i class="fa-solid fa-receipt"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-700">ยังไม่มีรายการคิวที่คุณสั่งไว้</h3>
-                    <p class="text-slate-500 text-sm mt-1 mb-6">เลือกเครื่องดื่มแสนอร่อย แล้วกดสั่งซื้อได้เลย!</p>
-                    <button onclick="switchTab('menu')" class="bg-brand-orange text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-orangeLight transition shadow-md">
-                        ดูรายการเมนู
-                    </button>
-                </div>
-
-                <div id="active-queue-card" class="hidden space-y-6">
-                    <div class="bg-gradient-to-br from-slate-900 to-brand-blueDark text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div>
-                                <span class="text-xs text-orange-400 uppercase tracking-widest font-bold">หมายเลขคิวของคุณ</span>
-                                <h3 id="queue-display-number" class="text-5xl font-extrabold tracking-tight text-white mt-1">Q-000</h3>
-                                <p id="queue-customer-info" class="text-sm text-slate-300 mt-1"><i class="fa-regular fa-user mr-1"></i>คุณ ... (08X-XXX-XXXX)</p>
-                            </div>
-                            <div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/20 text-right">
-                                <span id="queue-status-badge" class="inline-block bg-orange-500 text-white font-bold text-xs px-3 py-1 rounded-full mb-1">รับออเดอร์แล้ว</span>
-                                <p id="queue-estimated-time" class="text-xs text-slate-200"><i class="fa-regular fa-clock mr-1"></i>ประมาณ 5-10 นาที</p>
-                            </div>
-                        </div>
-
-                        <!-- Progress Steps Tracker -->
-                        <div class="mt-8 pt-6 border-t border-white/10">
-                            <div class="relative flex items-center justify-between">
-                                <!-- Line background -->
-                                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-700 rounded z-0"></div>
-                                <div id="queue-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-brand-orange rounded z-0 transition-all duration-700 w-0"></div>
-
-                                <!-- Step 1 -->
-                                <div id="step-1" class="relative z-10 flex flex-col items-center">
-                                    <div class="step-circle w-10 h-10 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-sm shadow-md">
-                                        1
-                                    </div>
-                                    <span class="text-xs mt-2 font-medium text-slate-200">รับออเดอร์</span>
-                                </div>
-
-                                <!-- Step 2 -->
-                                <div id="step-2" class="relative z-10 flex flex-col items-center">
-                                    <div class="step-circle w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 text-slate-400 flex items-center justify-center font-bold text-sm transition-all duration-300">
-                                        2
-                                    </div>
-                                    <span class="text-xs mt-2 font-medium text-slate-400">กำลังชงเครื่องดื่ม</span>
-                                </div>
-
-                                <!-- Step 3 -->
-                                <div id="step-3" class="relative z-10 flex flex-col items-center">
-                                    <div class="step-circle w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 text-slate-400 flex items-center justify-center font-bold text-sm transition-all duration-300">
-                                        3
-                                    </div>
-                                    <span class="text-xs mt-2 font-medium text-slate-400">พร้อมรับสินค้า!</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Items Summary in Queue -->
-                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                        <h4 class="font-bold text-slate-700 mb-3 border-b border-slate-200 pb-2">รายละเอียดรายการอาหารในคิวนี้</h4>
-                        <div id="queue-items-list" class="space-y-3">
-                            <!-- Items inserted dynamically -->
-                        </div>
-                        <div class="flex justify-between items-center mt-4 pt-3 border-t border-slate-200 text-slate-800 font-bold">
-                            <span>ราคารวมทั้งสิ้น</span>
-                            <span id="queue-total-price" class="text-lg text-brand-orange">฿0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="admin-panel" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-slate-700 max-w-sm w-full transform transition-all duration-300 translate-y-full opacity-0 pointer-events-none">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-700 pb-2">
-            <div class="flex items-center space-x-2 text-brand-orange font-bold text-sm">
-                <i class="fa-solid fa-shop"></i>
-                <span>Barista Simulation Control</span>
-            </div>
-            <button onclick="toggleAdminPanel()" class="text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark"></i>
+        <!-- Navigation Tabs (Desktop) -->
+        <div id="menu-section" class="hidden sm:flex border-b border-gray-200 mb-6 gap-6">
+            <button id="tab-btn-menu" onclick="switchTab('menu')" class="pb-3 text-brand-orange font-bold border-b-2 border-brand-orange flex items-center gap-2 transition">
+                <i class="fa-solid fa-mug-saucer"></i> เมนูทั้งหมด
+            </button>
+            <button id="tab-btn-queue" onclick="switchTab('queue')" class="pb-3 text-gray-400 font-medium border-b-2 border-transparent hover:text-gray-600 flex items-center gap-2 transition">
+                <i class="fa-solid fa-clock-rotate-left"></i> ติดตามคิว (<span id="queue-count-desktop">0</span>)
             </button>
         </div>
-        <p class="text-xs text-slate-300 mb-3">กดปุ่มด้านล่างเพื่อสลับสถานะออเดอร์ของลูกค้าสำหรับทดสอบระบบแจ้งเตือนแบบเรียลไทม์</p>
-        
-        <div class="space-y-2">
-            <button onclick="adminSetStatus(1)" class="w-full bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 py-2 px-3 rounded-lg text-left flex items-center justify-between border border-slate-600">
-                <span>1. สถานะ: รับออเดอร์แล้ว</span>
-                <i class="fa-solid fa-check text-orange-400"></i>
+
+        <!-- TAB 1: MENU SECTION -->
+        <div id="tab-menu" class="space-y-6 sm:space-y-8">
+            <!-- Popular Section -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-base sm:text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-brand-orange"></i> เมนูขายดียอดฮิต 🔥
+                    </h3>
+                    <span class="text-[11px] sm:text-xs text-brand-orange font-semibold">ยอดนิยมประจำร้าน</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4" id="popular-menu-grid"></div>
+            </div>
+
+            <!-- All Menu Section -->
+            <div>
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-brand-blue"></i> เมนูทั้งหมด
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4" id="all-menu-grid"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: QUEUE TRACKER SECTION -->
+        <div id="tab-queue" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm">
+                <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-brand-orange"></i> สถานะรายการสั่งซื้อของคุณ
+                </h3>
+                <p class="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">ระบบจะแจ้งเตือนเมื่อเครื่องดื่มของคุณพร้อมรับแล้ว</p>
+                <div id="queue-list" class="space-y-3 sm:space-y-4"></div>
+            </div>
+
+            <!-- Demo Controller -->
+            <div class="p-4 bg-orange-50 border border-orange-200 rounded-2xl text-xs text-orange-900">
+                <p class="font-bold mb-1.5"><i class="fa-solid fa-vial"></i> แผงทดสอบระบบบาริสต้า (สำหรับทดสอบแจ้งเตือนคิว):</p>
+                <p class="mb-3 text-orange-700">คลิกปุ่มเพื่อจำลองสถานะคิวล่าสุดของคุณ</p>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="demoUpdateQueue('cooking')" class="px-2 py-2 bg-yellow-500 text-white rounded-xl font-semibold shadow text-center active:scale-95">1. กำลังชง</button>
+                    <button onclick="demoUpdateQueue('ready')" class="px-2 py-2 bg-green-600 text-white rounded-xl font-semibold shadow text-center active:scale-95">2. พร้อมรับ!</button>
+                    <button onclick="demoUpdateQueue('completed')" class="px-2 py-2 bg-gray-600 text-white rounded-xl font-semibold shadow text-center active:scale-95">3. รับแล้ว</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 z-40 sm:hidden pb-[env(safe-area-inset-bottom)]">
+        <div class="grid grid-cols-2 h-14">
+            <button id="mobile-nav-menu" onclick="switchTab('menu')" class="flex flex-col items-center justify-center text-brand-orange font-bold text-xs gap-1">
+                <i class="fa-solid fa-mug-saucer text-lg"></i>
+                <span>เมนูอาหาร</span>
             </button>
-            <button onclick="adminSetStatus(2)" class="w-full bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 py-2 px-3 rounded-lg text-left flex items-center justify-between border border-slate-600">
-                <span>2. สถานะ: กำลังชงเครื่องดื่ม</span>
-                <i class="fa-solid fa-blender text-blue-400"></i>
-            </button>
-            <button onclick="adminSetStatus(3)" class="w-full bg-green-600 hover:bg-green-500 text-xs text-white font-bold py-2 px-3 rounded-lg text-left flex items-center justify-between shadow">
-                <span>3. สถานะ: พร้อมรับเครื่องดื่ม! (มีเสียงเตือน)</span>
-                <i class="fa-solid fa-bell"></i>
+            <button id="mobile-nav-queue" onclick="switchTab('queue')" class="relative flex flex-col items-center justify-center text-gray-400 font-medium text-xs gap-1">
+                <div class="relative">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    <span id="queue-badge-mobile" class="hidden absolute -top-1 -right-2 bg-brand-orange text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+                </div>
+                <span>ติดตามคิว</span>
             </button>
         </div>
     </div>
 
-    <div id="customize-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 flex flex-col transform scale-95 transition-transform duration-200" id="customize-modal-box">
-            
-            <!-- Modal Header -->
-            <div class="relative p-6 border-b border-slate-100 flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <span id="modal-item-emoji" class="text-4xl bg-orange-50 p-3 rounded-2xl">🧋</span>
+    <!-- MODAL 1: ORDER CUSTOMIZATION -->
+    <div id="customize-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl transition-all max-h-[85vh] sm:max-h-[90vh] flex flex-col">
+            <div class="relative p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+                <h3 class="font-bold text-gray-800 text-base sm:text-lg pr-4 line-clamp-1" id="modal-item-name">ชื่อเมนู</h3>
+                <button onclick="closeCustomizeModal()" class="w-8 h-8 rounded-full bg-white text-gray-400 hover:text-gray-600 flex items-center justify-center border border-gray-200 shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1">
+                <div class="flex gap-3.5 items-center">
+                    <img id="modal-item-img" src="" alt="" class="w-20 h-20 rounded-2xl object-cover bg-gray-100 shrink-0">
                     <div>
-                        <h3 id="modal-item-title" class="text-xl font-bold text-slate-800">ชื่อเมนู</h3>
-                        <p id="modal-item-price" class="text-brand-orange font-bold text-lg">฿0</p>
+                        <p id="modal-item-desc" class="text-xs text-gray-500 mb-1 leading-relaxed">คำอธิบาย</p>
+                        <p class="text-brand-orange font-bold text-lg sm:text-xl"><span id="modal-item-price">0</span> ฿</p>
                     </div>
                 </div>
-                <button onclick="closeCustomizeModal()" class="w-9 h-9 bg-slate-100 text-slate-500 hover:bg-slate-200 rounded-full flex items-center justify-center font-bold">
+                <div>
+                    <label class="block font-semibold text-xs sm:text-sm text-gray-800 mb-2">ระดับความหวาน <span class="text-brand-orange">*</span></label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="sweetness-options">
+                        <button type="button" onclick="selectSweetness('0%')" class="sweet-btn border-2 border-gray-200 rounded-xl py-2.5 px-2 text-xs text-center font-medium active:scale-95 transition">0% (ไม่หวาน)</button>
+                        <button type="button" onclick="selectSweetness('25%')" class="sweet-btn border-2 border-gray-200 rounded-xl py-2.5 px-2 text-xs text-center font-medium active:scale-95 transition">25% (หวานน้อย)</button>
+                        <button type="button" onclick="selectSweetness('50%')" class="sweet-btn border-2 border-gray-200 rounded-xl py-2.5 px-2 text-xs text-center font-medium active:scale-95 transition">50% (หวานปานกลาง)</button>
+                        <button type="button" onclick="selectSweetness('100%')" class="sweet-btn border-2 border-brand-orange bg-orange-50 text-brand-orange font-bold rounded-xl py-2.5 px-2 text-xs text-center transition">100% (หวานปกติ)</button>
+                        <button type="button" onclick="selectSweetness('125%')" class="sweet-btn border-2 border-gray-200 rounded-xl py-2.5 px-2 text-xs text-center font-medium active:scale-95 transition">125% (หวานมาก)</button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-xs sm:text-sm text-gray-800 mb-2">รูปแบบเครื่องดื่ม</label>
+                    <div class="grid grid-cols-3 gap-2" id="type-options">
+                        <button type="button" onclick="selectType('เย็น')" class="type-btn border-2 border-brand-blue bg-blue-50 text-brand-blue font-bold rounded-xl py-2.5 px-1 text-xs text-center transition">เย็น (Iced)</button>
+                        <button type="button" onclick="selectType('ร้อน')" class="type-btn border-2 border-gray-200 rounded-xl py-2.5 px-1 text-xs text-center font-medium active:scale-95 transition">ร้อน (Hot)</button>
+                        <button type="button" onclick="selectType('ปั่น')" class="type-btn border-2 border-gray-200 rounded-xl py-2.5 px-1 text-xs text-center font-medium active:scale-95 transition">ปั่น (+10฿)</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <span class="font-semibold text-xs sm:text-sm text-gray-800">จำนวน</span>
+                    <div class="flex items-center gap-3">
+                        <button onclick="adjustModalQty(-1)" class="w-9 h-9 rounded-full bg-gray-100 text-gray-600 font-bold flex items-center justify-center hover:bg-gray-200 active:scale-95 text-lg">-</button>
+                        <span id="modal-qty" class="font-bold text-gray-800 w-6 text-center text-base">1</span>
+                        <button onclick="adjustModalQty(1)" class="w-9 h-9 rounded-full bg-brand-orange text-white font-bold flex items-center justify-center hover:bg-orange-600 active:scale-95 text-lg">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-100 bg-white">
+                <button onclick="confirmAddToCart()" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg shadow-orange-500/20 active:scale-98 flex items-center justify-center gap-2">
+                    <span>เพิ่มลงตะกร้า</span> - <span id="modal-total-price">0</span> ฿
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SHOPPING CART -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl transition-all max-h-[85vh] sm:max-h-[90vh] flex flex-col">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-basket-shopping text-brand-orange"></i>
+                    <h3 class="font-bold text-gray-800 text-base sm:text-lg">ตะกร้าของคุณ</h3>
+                </div>
+                <button onclick="closeCartModal()" class="w-8 h-8 rounded-full bg-white text-gray-400 hover:text-gray-600 flex items-center justify-center border border-gray-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="cart-items-container" class="p-4 overflow-y-auto space-y-3 flex-1 divide-y divide-gray-100"></div>
+            <div class="p-4 border-t border-gray-100 bg-white space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500">ราคารวมทั้งหมด</span>
+                    <span id="cart-total-price" class="font-extrabold text-xl text-brand-orange">0 ฿</span>
+                </div>
+                <button onclick="goToPaymentModal()" class="w-full bg-brand-blue hover:bg-brand-blue-dark text-white font-bold py-3.5 rounded-2xl transition shadow-lg shadow-blue-500/20 active:scale-98 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-credit-card"></i> ไปยังหน้าชำระเงิน
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: PAYMENT METHOD (NEW) -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+        <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl transition-all max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+                <div class="flex items-center gap-2">
+                    <button onclick="backToCartModal()" class="text-gray-500 hover:text-gray-700 mr-1"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h3 class="font-bold text-gray-800 text-base sm:text-lg">ชำระเงิน (Checkout)</h3>
+                </div>
+                <button onclick="closePaymentModal()" class="w-8 h-8 rounded-full bg-white text-gray-400 hover:text-gray-600 flex items-center justify-center border border-gray-200">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <!-- Customization Options -->
-            <div class="p-6 space-y-6 flex-1">
-                
-                <!-- Temperature Selection -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">1. เลือกรอบอุณหภูมิ (Type)</label>
-                    <div class="grid grid-cols-3 gap-3" id="option-temp-group">
-                        <button type="button" onclick="selectTemp('เย็น')" class="temp-btn border-2 border-brand-orange bg-orange-50 text-brand-orange font-bold py-2.5 rounded-xl text-sm flex flex-col items-center">
-                            <span>🧊 เย็น (Iced)</span>
-                        </button>
-                        <button type="button" onclick="selectTemp('ร้อน')" class="temp-btn border-2 border-slate-200 bg-white text-slate-600 font-medium py-2.5 rounded-xl text-sm flex flex-col items-center">
-                            <span>☕ ร้อน (Hot)</span>
-                        </button>
-                        <button type="button" onclick="selectTemp('ปั่น')" class="temp-btn border-2 border-slate-200 bg-white text-slate-600 font-medium py-2.5 rounded-xl text-sm flex flex-col items-center">
-                            <span>🍧 ปั่น (+฿10)</span>
-                        </button>
-                    </div>
+            <!-- Content -->
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1">
+                <!-- Summary price banner -->
+                <div class="bg-brand-orange-light border border-orange-200 rounded-2xl p-4 text-center">
+                    <p class="text-xs text-brand-orange font-medium">ยอดชำระเงินทั้งหมด</p>
+                    <h2 class="text-3xl font-black text-brand-orange mt-0.5"><span id="pay-total-price">0</span> ฿</h2>
                 </div>
 
-                <!-- Sweetness Level Selection -->
+                <!-- Select Payment Method -->
                 <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-sm font-bold text-slate-700">2. ระดับความหวาน (Sweetness Level)</label>
-                        <span id="selected-sweetness-label" class="text-xs font-bold text-brand-orange bg-orange-100 px-2.5 py-0.5 rounded-full">100% (หวานปกติ)</span>
-                    </div>
-                    <div class="grid grid-cols-5 gap-2 text-center" id="option-sweetness-group">
-                        <button type="button" onclick="selectSweetness('0%', 'ไม่หวาน')" class="sweet-btn border-2 border-slate-200 p-2 rounded-xl text-xs font-semibold text-slate-600">0%<br><span class="text-[10px] text-slate-400 font-normal">ไม่หวาน</span></button>
-                        <button type="button" onclick="selectSweetness('25%', 'หวานน้อยมาก')" class="sweet-btn border-2 border-slate-200 p-2 rounded-xl text-xs font-semibold text-slate-600">25%<br><span class="text-[10px] text-slate-400 font-normal">น้อยมาก</span></button>
-                        <button type="button" onclick="selectSweetness('50%', 'หวานน้อย')" class="sweet-btn border-2 border-slate-200 p-2 rounded-xl text-xs font-semibold text-slate-600">50%<br><span class="text-[10px] text-slate-400 font-normal">หวานน้อย</span></button>
-                        <button type="button" onclick="selectSweetness('100%', 'หวานปกติ')" class="sweet-btn border-2 border-brand-orange bg-orange-50 text-brand-orange font-bold p-2 rounded-xl text-xs">100%<br><span class="text-[10px] font-normal">หวานปกติ</span></button>
-                        <button type="button" onclick="selectSweetness('125%', 'หวานมาก')" class="sweet-btn border-2 border-slate-200 p-2 rounded-xl text-xs font-semibold text-slate-600">125%<br><span class="text-[10px] text-slate-400 font-normal">หวานมาก</span></button>
-                    </div>
-                </div>
+                    <label class="block font-semibold text-xs sm:text-sm text-gray-800 mb-2.5">เลือกช่องทางการชำระเงิน</label>
+                    <div class="space-y-2" id="payment-method-options">
+                        <!-- Option 1: QR PromptPay -->
+                        <label class="flex items-center gap-3 p-3.5 border-2 border-brand-orange bg-orange-50/50 rounded-2xl cursor-pointer transition active:scale-98">
+                            <input type="radio" name="pay_method" value="qr" checked onclick="selectPaymentMethod('qr')" class="accent-brand-orange w-4 h-4">
+                            <div class="w-8 h-8 bg-blue-900 text-white rounded-lg flex items-center justify-center font-bold text-xs shrink-0">
+                                <i class="fa-solid fa-qrcode"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-bold text-xs sm:text-sm text-gray-800">สแกน QR Code (พร้อมเพย์)</p>
+                                <p class="text-[10px] text-gray-500">สแกนจ่ายผ่านแอปธนาคารได้ทุกธนาคาร</p>
+                            </div>
+                        </label>
 
-                <!-- Toppings Selection -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">3. เลือกท็อปปิ้งเพิ่มเติม (Toppings)</label>
-                    <div class="grid grid-cols-2 gap-3" id="option-toppings-group">
-                        <label class="topping-item border border-slate-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:border-brand-orange transition">
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" value="ไข่มุก" data-price="10" onchange="calcModalPrice()" class="topping-checkbox w-4 h-4 accent-brand-orange rounded">
-                                <span class="text-sm font-medium text-slate-700">🧋 ไข่มุก (Boba)</span>
+                        <!-- Option 2: Cash / Store Pickup -->
+                        <label class="flex items-center gap-3 p-3.5 border-2 border-gray-200 rounded-2xl cursor-pointer transition active:scale-98">
+                            <input type="radio" name="pay_method" value="cash" onclick="selectPaymentMethod('cash')" class="accent-brand-orange w-4 h-4">
+                            <div class="w-8 h-8 bg-green-600 text-white rounded-lg flex items-center justify-center font-bold text-xs shrink-0">
+                                <i class="fa-solid fa-money-bill-wave"></i>
                             </div>
-                            <span class="text-xs text-slate-500 font-semibold">+฿10</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-xs sm:text-sm text-gray-800">เงินสด (ชำระหน้าร้าน)</p>
+                                <p class="text-[10px] text-gray-500">ชำระด้วยเงินสดเมื่อมารับเครื่องดื่ม</p>
+                            </div>
                         </label>
-                        <label class="topping-item border border-slate-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:border-brand-orange transition">
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" value="พุดดิ้ง" data-price="15" onchange="calcModalPrice()" class="topping-checkbox w-4 h-4 accent-brand-orange rounded">
-                                <span class="text-sm font-medium text-slate-700">🍮 พุดดิ้ง (Pudding)</span>
+
+                        <!-- Option 3: Credit / Debit Card -->
+                        <label class="flex items-center gap-3 p-3.5 border-2 border-gray-200 rounded-2xl cursor-pointer transition active:scale-98">
+                            <input type="radio" name="pay_method" value="card" onclick="selectPaymentMethod('card')" class="accent-brand-orange w-4 h-4">
+                            <div class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-bold text-xs shrink-0">
+                                <i class="fa-solid fa-credit-card"></i>
                             </div>
-                            <span class="text-xs text-slate-500 font-semibold">+฿15</span>
-                        </label>
-                        <label class="topping-item border border-slate-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:border-brand-orange transition">
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" value="เยลลี่" data-price="10" onchange="calcModalPrice()" class="topping-checkbox w-4 h-4 accent-brand-orange rounded">
-                                <span class="text-sm font-medium text-slate-700">🍯 เยลลี่ (Jelly)</span>
+                            <div class="flex-1">
+                                <p class="font-bold text-xs sm:text-sm text-gray-800">บัตรเครดิต / เดบิต</p>
+                                <p class="text-[10px] text-gray-500">Visa, Mastercard, JCB</p>
                             </div>
-                            <span class="text-xs text-slate-500 font-semibold">+฿10</span>
-                        </label>
-                        <label class="topping-item border border-slate-200 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:border-brand-orange transition">
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" value="วิปครีม" data-price="15" onchange="calcModalPrice()" class="topping-checkbox w-4 h-4 accent-brand-orange rounded">
-                                <span class="text-sm font-medium text-slate-700">🍦 วิปครีม (Whip)</span>
-                            </div>
-                            <span class="text-xs text-slate-500 font-semibold">+฿15</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- Special Note -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-1">รายละเอียดเพิ่มเติม (Special Instructions)</label>
-                    <input type="text" id="modal-special-note" placeholder="เช่น แยกน้ำแข็ง, เพิ่มน้ำนม..." class="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-orange focus:outline-none">
-                </div>
-
-                <!-- Quantity adjustment -->
-                <div class="flex items-center justify-between pt-2">
-                    <span class="text-sm font-bold text-slate-700">จำนวน</span>
-                    <div class="flex items-center space-x-3 bg-slate-100 p-1.5 rounded-xl">
-                        <button onclick="updateModalQty(-1)" class="w-8 h-8 bg-white rounded-lg shadow text-slate-700 font-bold flex items-center justify-center hover:bg-slate-50">-</button>
-                        <span id="modal-qty-display" class="font-bold text-slate-800 w-6 text-center">1</span>
-                        <button onclick="updateModalQty(1)" class="w-8 h-8 bg-white rounded-lg shadow text-slate-700 font-bold flex items-center justify-center hover:bg-slate-50">+</button>
+                <!-- Dynamic Payment View 1: QR CODE DISPLAY -->
+                <div id="pay-view-qr" class="bg-gray-50 p-4 rounded-2xl border border-gray-200 text-center space-y-3">
+                    <p class="text-xs font-semibold text-gray-700">สแกนเพื่อชำระเงินด้วย PromptPay</p>
+                    <div class="bg-white p-3 rounded-2xl inline-block shadow-sm border border-gray-100">
+                        <!-- Dynamic QR Code generated via API -->
+                        <img id="qr-code-img" src="" alt="PromptPay QR" class="w-44 h-44 mx-auto object-contain">
                     </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer / Confirm Add -->
-            <div class="p-6 border-t border-slate-100 bg-slate-50 rounded-b-3xl flex items-center justify-between gap-4">
-                <div>
-                    <span class="text-xs text-slate-500 block">ราคารวมรายการนี้</span>
-                    <span id="modal-calculated-total" class="text-2xl font-black text-brand-orange">฿0</span>
-                </div>
-                <button onclick="confirmAddToCart()" class="flex-1 bg-brand-orange hover:bg-brand-orangeLight text-white font-bold py-3 px-6 rounded-2xl shadow-lg shadow-orange-500/20 transition flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-cart-plus"></i>
-                    <span>ใส่ตะกร้า</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="cart-modal" class="fixed inset-0 z-50 flex justify-end bg-slate-900/50 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300" id="cart-modal-box">
-            
-            <!-- Cart Header -->
-            <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-basket-shopping text-brand-orange text-xl"></i>
-                    <h3 class="font-bold text-lg text-slate-800">ตะกร้าของคุณ</h3>
-                </div>
-                <button onclick="closeCartModal()" class="w-8 h-8 text-slate-400 hover:text-slate-600 rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Cart Items List -->
-            <div class="flex-1 overflow-y-auto p-5 space-y-4" id="cart-items-container">
-                <!-- Cart items populated dynamically -->
-            </div>
-
-            <!-- Cart Summary & Checkout Form -->
-            <div id="cart-footer" class="p-5 border-t border-slate-100 bg-slate-50 space-y-4">
-                <div class="space-y-2">
-                    <div class="flex justify-between text-slate-600 text-sm">
-                        <span>จำนวนทั้งหมด</span>
-                        <span id="cart-summary-qty">0 แก้ว</span>
-                    </div>
-                    <div class="flex justify-between text-slate-900 font-extrabold text-lg pt-2 border-t border-slate-200">
-                        <span>ยอดรวมชำระ</span>
-                        <span id="cart-summary-total" class="text-brand-orange">฿0</span>
+                    <p class="text-[11px] text-gray-500">ชื่อบัญชี: <strong>JYNG JUNG COFFEE</strong></p>
+                    <div class="inline-flex items-center gap-1.5 bg-yellow-100 text-yellow-800 text-[10px] px-3 py-1 rounded-full font-medium">
+                        <i class="fa-solid fa-clock"></i> กรุณาชำระภายใน <span id="qr-timer" class="font-bold">05:00</span> นาที
                     </div>
                 </div>
 
-                <!-- Customer Details Form -->
-                <div class="space-y-3 pt-2">
+                <!-- Dynamic Payment View 2: CASH DISPLAY -->
+                <div id="pay-view-cash" class="hidden bg-gray-50 p-4 rounded-2xl border border-gray-200 text-center space-y-2">
+                    <i class="fa-solid fa-store text-3xl text-brand-orange my-1"></i>
+                    <p class="text-xs font-bold text-gray-800">สั่งสินค้าล่วงหน้า แล้วจ่ายเงินสดหน้าเคาน์เตอร์</p>
+                    <p class="text-[11px] text-gray-500">กรุณาแจ้งหมายเลขออเดอร์แก่พนักงานเมื่อมาถึงร้าน</p>
+                </div>
+
+                <!-- Dynamic Payment View 3: CARD DISPLAY -->
+                <div id="pay-view-card" class="hidden bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อลูกค้า <span class="text-red-500">*</span></label>
-                        <input type="text" id="cust-name" placeholder="เช่น คุณสมชาย" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-orange focus:outline-none">
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">หมายเลขบัตร</label>
+                        <input type="text" placeholder="4541 1234 5678 9000" class="w-full text-xs p-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-brand-blue">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">เบอร์โทรศัพท์ <span class="text-red-500">*</span></label>
-                        <input type="tel" id="cust-phone" placeholder="เช่น 0812345678" class="w-full text-sm border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-brand-orange focus:outline-none">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">วันหมดอายุ (MM/YY)</label>
+                            <input type="text" placeholder="12/28" class="w-full text-xs p-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-brand-blue">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-600 mb-1">CVV</label>
+                            <input type="password" placeholder="123" maxlength="3" class="w-full text-xs p-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-brand-blue">
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <button onclick="processCheckout()" class="w-full bg-brand-orange hover:bg-brand-orangeLight text-white font-bold py-3 rounded-2xl shadow-lg shadow-orange-500/20 transition text-center flex items-center justify-center space-x-2">
-                    <span>ยืนยันการสั่งซื้อ & ยืนยันรับคิว</span>
-                    <i class="fa-solid fa-arrow-right"></i>
+            <!-- Footer Button -->
+            <div class="p-4 border-t border-gray-100 bg-white">
+                <button onclick="confirmPaymentAndOrder()" class="w-full bg-brand-orange hover:bg-orange-600 text-white font-bold py-3.5 rounded-2xl transition shadow-lg shadow-orange-500/20 active:scale-98 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> ยืนยันการชำระเงิน & สั่งซื้อ
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Notification Sound Alert Banner -->
-    <div id="status-alert-toast" class="fixed top-5 right-5 z-50 bg-green-500 text-white p-4 rounded-2xl shadow-2xl flex items-center space-x-4 max-w-sm transform translate-y-[-150%] transition-transform duration-500">
-        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-2xl">
-            🔔
+    <!-- QUEUE READY NOTIFICATION TOAST -->
+    <div id="notification-toast" class="fixed top-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 z-50 bg-green-600 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3.5 transition-all duration-300 -translate-y-32 opacity-0 pointer-events-none max-w-sm mx-auto">
+        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shrink-0">
+            <i class="fa-solid fa-mug-hot animate-bounce"></i>
         </div>
-        <div>
-            <h4 class="font-bold text-sm" id="toast-title">อัปเดตสถานะคิว!</h4>
-            <p class="text-xs text-white/90" id="toast-message">เครื่องดื่มของคุณพร้อมรับแล้วครับ</p>
+        <div class="flex-1">
+            <h4 class="font-bold text-sm sm:text-base">เครื่องดื่มพร้อมรับแล้ว! 🎉</h4>
+            <p id="toast-message" class="text-xs text-green-100">คิวของคุณพร้อมให้รับที่หน้าร้านแล้วครับ</p>
         </div>
+        <button onclick="closeToast()" class="text-white/80 hover:text-white p-1">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
-        // Data Store
-        const menuData = [
-            {
-                id: 'm1',
-                name: 'ชานมไต้หวันพรีเมียม',
-                category: 'tea',
-                price: 55,
-                isPopular: true,
-                badgeText: 'เมนูยอดฮิต #1',
-                emoji: '🧋',
-                description: 'ชานมสูตรไต้หวันต้นตำรับ หอมชาเข้มข้น นุ่มกลมกล่อมลงตัว'
-            },
-            {
-                id: 'm2',
-                name: 'ชาไทยต้นตำรับ JYNG JUNG',
-                category: 'tea',
-                price: 50,
-                isPopular: true,
-                badgeText: 'เมนูยอดฮิต #2',
-                emoji: '🥤',
-                description: 'ใบชาไทยคัดพิเศษ ชงสดใหม่ หอมหวานมัน เข้มข้นถึงใจ'
-            },
-            {
-                id: 'm3',
-                name: 'เอสเพรสโซ่เย็น (Iced Espresso)',
-                category: 'coffee',
-                price: 60,
-                isPopular: false,
-                emoji: '☕',
-                description: 'กาแฟคั่วเข้ม รสชาติเข้มข้น หอมกลิ่นกาแฟคั่วบดสด'
-            },
-            {
-                id: 'm4',
-                name: 'ลาเต้เย็น (Iced Latte)',
-                category: 'coffee',
-                price: 65,
-                isPopular: false,
-                emoji: '🥛',
-                description: 'กาแฟเอสเพรสโซ่ผสมนมสดนุ่มนวล รสชาตินุ่มละมุน'
-            },
-            {
-                id: 'm5',
-                name: 'มัทฉะลาเต้แท้ 100%',
-                category: 'tea',
-                price: 70,
-                isPopular: false,
-                emoji: '🍵',
-                description: 'ผงมัทฉะเกรดพรีเมียมจากญี่ปุ่น หอมกลิ่นชาเขียวแท้ๆ'
-            },
-            {
-                id: 'm6',
-                name: 'ชามะนาวโซดาดับร้อน',
-                category: 'refresh',
-                price: 45,
-                isPopular: false,
-                emoji: '🍋',
-                description: 'ความสดชื่นจากน้ำมะนาวแท้ผสมชาหอมหวานเปรี้ยวซ่า'
-            }
+        const menuItems = [
+            { id: 'm1', name: 'ชานมไต้หวัน (Taiwan Milk Tea)', price: 55, desc: 'ชานมเข้มข้น หอมกลิ่นชาไต้หวันแท้ๆ นุ่มละมุนลิ้น', img: 'https://images.unsplash.com/photo-1558857563-b371033873b8?auto=format&fit=crop&w=400&q=80', popular: true },
+            { id: 'm2', name: 'ชาไทยต้นตำรับ (Thai Milk Tea)', price: 55, desc: 'ชาไทยหอมเข้ม รสชาติกลมกล่อม หวานมันกำลังดี', img: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=400&q=80', popular: true },
+            { id: 'm3', name: 'อเมริกาโน่ (Americano)', price: 60, desc: 'กาแฟเอสเพรสโซ่เข้มข้นผสมน้ำ รสชาติสะอาด สดชื่น', img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80', popular: false },
+            { id: 'm4', name: 'ลาเต้ (Caffe Latte)', price: 65, desc: 'เอสเพรสโซ่เข้มข้นผสมนมสดนุ่ม นุ่มนวล ทานง่าย', img: 'https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=400&q=80', popular: false },
+            { id: 'm5', name: 'ชาเขียวมัทฉะ (Matcha Latte)', price: 70, desc: 'มัทฉะเกรดพรีเมียมจากญี่ปุ่น หอมเข้มข้นกลมกล่อม', img: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=400&q=80', popular: false }
         ];
 
         let cart = [];
-        let currentCustomizingItem = null;
-        let selectedTemp = 'เย็น';
-        let selectedSweetness = { percent: '100%', desc: 'หวานปกติ' };
-        let modalQuantity = 1;
+        let activeOrders = [];
+        let selectedItem = null;
+        let selectedSweetness = '100%';
+        let selectedType = 'เย็น';
+        let modalQty = 1;
+        let currentPayMethod = 'qr';
+        let qrTimerInterval = null;
 
-        // Current Active Queue State
-        let activeQueue = null; // { queueNo, name, phone, items, total, status: 1|2|3, timestamp }
-
-        // Initialize App
-        window.onload = function() {
+        document.addEventListener('DOMContentLoaded', () => {
             renderMenu();
-            updateCartBadge();
-        };
+            updateCartCount();
+        });
 
-        function renderMenu(categoryFilter = 'all') {
-            const popularGrid = document.getElementById('popular-items-grid');
-            const allGrid = document.getElementById('all-items-grid');
+        function renderMenu() {
+            const popularContainer = document.getElementById('popular-menu-grid');
+            const allContainer = document.getElementById('all-menu-grid');
+            popularContainer.innerHTML = '';
+            allContainer.innerHTML = '';
 
-            popularGrid.innerHTML = '';
-            allGrid.innerHTML = '';
-
-            // Render Popular Section
-            const populars = menuData.filter(i => i.isPopular);
-            populars.forEach(item => {
-                popularGrid.innerHTML += `
-                    <div class="bg-white rounded-3xl p-5 shadow-md border-2 border-orange-100 hover:border-brand-orange transition flex flex-col justify-between relative overflow-hidden group">
-                        <span class="absolute top-3 right-3 bg-brand-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow badge-pulse">
-                            <i class="fa-solid fa-fire mr-1"></i>${item.badgeText}
-                        </span>
-                        <div class="flex space-x-4 items-center">
-                            <div class="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition duration-300">
-                                ${item.emoji}
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-lg text-slate-800">${item.name}</h4>
-                                <p class="text-xs text-slate-500 mt-1 line-clamp-2">${item.description}</p>
-                                <div class="mt-3 flex items-center justify-between">
-                                    <span class="text-xl font-black text-brand-orange">฿${item.price}</span>
-                                    <button onclick="openCustomizeModal('${item.id}')" class="bg-brand-blue hover:bg-brand-blueDark text-white text-sm font-bold px-4 py-2 rounded-xl shadow transition flex items-center space-x-1">
-                                        <i class="fa-solid fa-plus text-xs"></i>
-                                        <span>เลือกสั่ง</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            // Render All Items Grid
-            const filtered = categoryFilter === 'all' 
-                ? menuData 
-                : menuData.filter(i => i.category === categoryFilter);
-
-            filtered.forEach(item => {
-                allGrid.innerHTML += `
-                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3">
-                                <div class="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center text-3xl">
-                                    ${item.emoji}
-                                </div>
-                                <span class="text-slate-900 font-bold text-lg">฿${item.price}</span>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-base">${item.name}</h4>
-                            <p class="text-xs text-slate-500 mt-1">${item.description}</p>
-                        </div>
-                        <button onclick="openCustomizeModal('${item.id}')" class="mt-4 w-full bg-slate-100 hover:bg-brand-orange hover:text-white text-slate-700 font-bold py-2 rounded-xl transition text-sm flex items-center justify-center space-x-1">
-                            <i class="fa-solid fa-sliders text-xs"></i>
-                            <span>เลือกความหวาน / ท็อปปิ้ง</span>
-                        </button>
-                    </div>
-                `;
+            menuItems.forEach(item => {
+                if (item.popular) popularContainer.innerHTML += createPopularCardHTML(item);
+                allContainer.innerHTML += createRegularCardHTML(item);
             });
         }
 
-        function filterCategory(cat) {
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-orange', 'text-white');
-                btn.classList.add('bg-white', 'text-slate-600');
-            });
-            event.currentTarget.classList.remove('bg-white', 'text-slate-600');
-            event.currentTarget.classList.add('bg-brand-orange', 'text-white');
-            renderMenu(cat);
+        function createPopularCardHTML(item) {
+            return `
+                <div class="bg-white rounded-2xl p-3 sm:p-4 border-2 border-orange-100 shadow-sm hover:shadow-md transition flex gap-3 sm:gap-4 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 badge-popular text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-xl shadow-sm">
+                        <i class="fa-solid fa-crown mr-1"></i> เมนูยอดฮิต
+                    </div>
+                    <img src="${item.img}" alt="${item.name}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover shrink-0">
+                    <div class="flex flex-col justify-between flex-1 min-w-0">
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-xs sm:text-base leading-snug truncate pr-12 sm:pr-14">${item.name}</h4>
+                            <p class="text-[11px] sm:text-xs text-gray-500 line-clamp-2 mt-0.5 sm:mt-1">${item.desc}</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="font-bold text-brand-orange text-base sm:text-lg">${item.price} ฿</span>
+                            <button onclick="openCustomizeModal('${item.id}')" class="bg-brand-orange text-white text-[11px] sm:text-xs px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl font-semibold hover:bg-orange-600 active:scale-95 transition shadow-sm">
+                                เลือก
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createRegularCardHTML(item) {
+            return `
+                <div class="bg-white rounded-2xl p-3 sm:p-4 border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <img src="${item.img}" alt="${item.name}" class="w-full h-28 sm:h-36 rounded-xl object-cover mb-2 sm:mb-3">
+                        <h4 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug line-clamp-1">${item.name}</h4>
+                        <p class="text-[10px] sm:text-xs text-gray-500 line-clamp-2 mt-1">${item.desc}</p>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-50">
+                        <span class="font-bold text-brand-blue text-sm sm:text-base">${item.price} ฿</span>
+                        <button onclick="openCustomizeModal('${item.id}')" class="bg-brand-blue-light text-brand-blue border border-blue-200 text-[11px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl font-semibold hover:bg-brand-blue hover:text-white active:scale-95 transition">
+                            สั่งซื้อ
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchTab(tab) {
+            const menuTab = document.getElementById('tab-menu');
+            const queueTab = document.getElementById('tab-queue');
+            const btnMenu = document.getElementById('tab-btn-menu');
+            const btnQueue = document.getElementById('tab-btn-queue');
+            const mobileBtnMenu = document.getElementById('mobile-nav-menu');
+            const mobileBtnQueue = document.getElementById('mobile-nav-queue');
+
+            if (tab === 'menu') {
+                menuTab.classList.remove('hidden');
+                queueTab.classList.add('hidden');
+                if (btnMenu) btnMenu.className = "pb-3 text-brand-orange font-bold border-b-2 border-brand-orange flex items-center gap-2 transition";
+                if (btnQueue) btnQueue.className = "pb-3 text-gray-400 font-medium border-b-2 border-transparent hover:text-gray-600 flex items-center gap-2 transition";
+                mobileBtnMenu.className = "flex flex-col items-center justify-center text-brand-orange font-bold text-xs gap-1";
+                mobileBtnQueue.className = "relative flex flex-col items-center justify-center text-gray-400 font-medium text-xs gap-1";
+            } else {
+                menuTab.classList.add('hidden');
+                queueTab.classList.remove('hidden');
+                if (btnQueue) btnQueue.className = "pb-3 text-brand-orange font-bold border-b-2 border-brand-orange flex items-center gap-2 transition";
+                if (btnMenu) btnMenu.className = "pb-3 text-gray-400 font-medium border-b-2 border-transparent hover:text-gray-600 flex items-center gap-2 transition";
+                mobileBtnQueue.className = "relative flex flex-col items-center justify-center text-brand-orange font-bold text-xs gap-1";
+                mobileBtnMenu.className = "flex flex-col items-center justify-center text-gray-400 font-medium text-xs gap-1";
+                renderQueueList();
+            }
         }
 
         function openCustomizeModal(itemId) {
-            const item = menuData.find(i => i.id === itemId);
-            if (!item) return;
+            selectedItem = menuItems.find(i => i.id === itemId);
+            if (!selectedItem) return;
 
-            currentCustomizingItem = item;
-            modalQuantity = 1;
-            selectedTemp = 'เย็น';
-            selectedSweetness = { percent: '100%', desc: 'หวานปกติ' };
+            selectedSweetness = '100%';
+            selectedType = 'เย็น';
+            modalQty = 1;
 
-            // Reset Form Elements
-            document.getElementById('modal-item-emoji').innerText = item.emoji;
-            document.getElementById('modal-item-title').innerText = item.name;
-            document.getElementById('modal-item-price').innerText = `฿${item.price}`;
-            document.getElementById('modal-qty-display').innerText = '1';
-            document.getElementById('modal-special-note').value = '';
+            document.getElementById('modal-item-name').innerText = selectedItem.name;
+            document.getElementById('modal-item-desc').innerText = selectedItem.desc;
+            document.getElementById('modal-item-img').src = selectedItem.img;
+            document.getElementById('modal-item-price').innerText = selectedItem.price;
 
-            // Reset Topping Checkboxes
-            document.querySelectorAll('.topping-checkbox').forEach(cb => cb.checked = false);
+            selectSweetness('100%');
+            selectType('เย็น');
+            updateModalPrice();
 
-            // Reset Temp Buttons Styling
-            selectTemp('เย็น');
-            selectSweetness('100%', 'หวานปกติ');
-
-            calcModalPrice();
-
-            // Show Modal with Animation
-            const modal = document.getElementById('customize-modal');
-            const box = document.getElementById('customize-modal-box');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                box.classList.remove('scale-95');
-            }, 10);
+            document.getElementById('customize-modal').classList.remove('hidden');
         }
 
         function closeCustomizeModal() {
-            const modal = document.getElementById('customize-modal');
-            const box = document.getElementById('customize-modal-box');
-            modal.classList.add('opacity-0');
-            box.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 200);
+            document.getElementById('customize-modal').classList.add('hidden');
         }
 
-        function selectTemp(temp) {
-            selectedTemp = temp;
-            const buttons = document.querySelectorAll('#option-temp-group .temp-btn');
+        function selectSweetness(level) {
+            selectedSweetness = level;
+            const buttons = document.querySelectorAll('.sweet-btn');
             buttons.forEach(btn => {
-                if (btn.innerText.includes(temp)) {
-                    btn.className = "temp-btn border-2 border-brand-orange bg-orange-50 text-brand-orange font-bold py-2.5 rounded-xl text-sm flex flex-col items-center";
+                if (btn.innerText.includes(level)) {
+                    btn.className = "sweet-btn border-2 border-brand-orange bg-orange-50 text-brand-orange font-bold rounded-xl py-2.5 px-2 text-xs text-center transition";
                 } else {
-                    btn.className = "temp-btn border-2 border-slate-200 bg-white text-slate-600 font-medium py-2.5 rounded-xl text-sm flex flex-col items-center";
-                }
-            });
-            calcModalPrice();
-        }
-
-        function selectSweetness(percent, desc) {
-            selectedSweetness = { percent, desc };
-            document.getElementById('selected-sweetness-label').innerText = `${percent} (${desc})`;
-
-            const buttons = document.querySelectorAll('#option-sweetness-group .sweet-btn');
-            buttons.forEach(btn => {
-                if (btn.innerText.includes(percent)) {
-                    btn.className = "sweet-btn border-2 border-brand-orange bg-orange-50 text-brand-orange font-bold p-2 rounded-xl text-xs";
-                } else {
-                    btn.className = "sweet-btn border-2 border-slate-200 p-2 rounded-xl text-xs font-semibold text-slate-600";
+                    btn.className = "sweet-btn border-2 border-gray-200 rounded-xl py-2.5 px-2 text-xs text-center font-medium active:scale-95 transition";
                 }
             });
         }
 
-        function updateModalQty(change) {
-            modalQuantity = Math.max(1, modalQuantity + change);
-            document.getElementById('modal-qty-display').innerText = modalQuantity;
-            calcModalPrice();
+        function selectType(type) {
+            selectedType = type;
+            const buttons = document.querySelectorAll('.type-btn');
+            buttons.forEach(btn => {
+                if (btn.innerText.includes(type)) {
+                    btn.className = "type-btn border-2 border-brand-blue bg-blue-50 text-brand-blue font-bold rounded-xl py-2.5 px-1 text-xs text-center transition";
+                } else {
+                    btn.className = "type-btn border-2 border-gray-200 rounded-xl py-2.5 px-1 text-xs text-center font-medium active:scale-95 transition";
+                }
+            });
+            updateModalPrice();
         }
 
-        function calcModalPrice() {
-            if (!currentCustomizingItem) return 0;
+        function adjustModalQty(delta) {
+            modalQty = Math.max(1, modalQty + delta);
+            document.getElementById('modal-qty').innerText = modalQty;
+            updateModalPrice();
+        }
 
-            let unitPrice = currentCustomizingItem.price;
-
-            // Extra for Frappe
-            if (selectedTemp === 'ปั่น') unitPrice += 10;
-
-            // Toppings price
-            const checkboxes = document.querySelectorAll('.topping-checkbox:checked');
-            checkboxes.forEach(cb => {
-                unitPrice += parseInt(cb.getAttribute('data-price') || 0);
-            });
-
-            const total = unitPrice * modalQuantity;
-            document.getElementById('modal-calculated-total').innerText = `฿${total}`;
-            return total;
+        function updateModalPrice() {
+            let basePrice = selectedItem.price;
+            if (selectedType === 'ปั่น') basePrice += 10;
+            const total = basePrice * modalQty;
+            document.getElementById('modal-total-price').innerText = total;
         }
 
         function confirmAddToCart() {
-            const selectedToppings = [];
-            document.querySelectorAll('.topping-checkbox:checked').forEach(cb => {
-                selectedToppings.push(cb.value);
-            });
-
-            const specialNote = document.getElementById('modal-special-note').value.trim();
-
-            let unitPrice = currentCustomizingItem.price;
-            if (selectedTemp === 'ปั่น') unitPrice += 10;
-            selectedToppings.forEach(t => {
-                if (t === 'พุดดิ้ง' || t === 'วิปครีม') unitPrice += 15;
-                else unitPrice += 10;
-            });
+            let basePrice = selectedItem.price;
+            if (selectedType === 'ปั่น') basePrice += 10;
 
             const cartItem = {
                 cartId: Date.now(),
-                itemId: currentCustomizingItem.id,
-                name: currentCustomizingItem.name,
-                emoji: currentCustomizingItem.emoji,
-                temp: selectedTemp,
-                sweetness: selectedSweetness.percent,
-                toppings: selectedToppings,
-                note: specialNote,
-                unitPrice: unitPrice,
-                qty: modalQuantity,
-                totalPrice: unitPrice * modalQuantity
+                id: selectedItem.id,
+                name: selectedItem.name,
+                price: basePrice,
+                sweetness: selectedSweetness,
+                type: selectedType,
+                qty: modalQty,
+                totalPrice: basePrice * modalQty
             };
 
             cart.push(cartItem);
-            updateCartBadge();
+            updateCartCount();
             closeCustomizeModal();
             openCartModal();
         }
 
-        function updateCartBadge() {
-            const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
-            document.getElementById('cart-count').innerText = totalQty;
-        }
-
         function openCartModal() {
             renderCartItems();
-            const modal = document.getElementById('cart-modal');
-            const box = document.getElementById('cart-modal-box');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                box.classList.remove('translate-x-full');
-            }, 10);
+            document.getElementById('cart-modal').classList.remove('hidden');
         }
 
         function closeCartModal() {
-            const modal = document.getElementById('cart-modal');
-            const box = document.getElementById('cart-modal-box');
-            modal.classList.add('opacity-0');
-            box.classList.add('translate-x-full');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+            document.getElementById('cart-modal').classList.add('hidden');
         }
 
         function renderCartItems() {
             const container = document.getElementById('cart-items-container');
-            const footer = document.getElementById('cart-footer');
+            const totalEl = document.getElementById('cart-total-price');
 
             if (cart.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-12 text-slate-400">
-                        <i class="fa-solid fa-basket-shopping text-5xl mb-3"></i>
-                        <p class="font-medium">ยังไม่มีสินค้าในตะกร้า</p>
+                    <div class="py-12 text-center text-gray-400">
+                        <i class="fa-solid fa-basket-shopping text-4xl mb-3 text-gray-300"></i>
+                        <p class="text-sm">ไม่มีสินค้าในตะกร้าของคุณ</p>
                     </div>
                 `;
-                footer.classList.add('hidden');
+                totalEl.innerText = "0 ฿";
                 return;
             }
 
-            footer.classList.remove('hidden');
-            container.innerHTML = '';
-
+            let html = '';
             let grandTotal = 0;
-            let totalQty = 0;
 
-            cart.forEach((item, idx) => {
+            cart.forEach((item, index) => {
                 grandTotal += item.totalPrice;
-                totalQty += item.qty;
-
-                const toppingsText = item.toppings.length > 0 ? item.toppings.join(', ') : 'ไม่มี';
-
-                container.innerHTML += `
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 relative flex justify-between items-start">
-                        <div class="space-y-1">
-                            <h4 class="font-bold text-slate-800 text-sm">${item.emoji} ${item.name}</h4>
-                            <p class="text-xs text-brand-orange font-semibold">อุณหภูมิ: ${item.temp} | หวาน: ${item.sweetness}</p>
-                            <p class="text-xs text-slate-500">ท็อปปิ้ง: ${toppingsText}</p>
-                            ${item.note ? `<p class="text-xs text-slate-400 italic">หมายเหตุ: "${item.note}"</p>` : ''}
-                            <div class="pt-2 font-bold text-slate-800 text-sm">฿${item.totalPrice}</div>
+                html += `
+                    <div class="pt-3 flex items-center justify-between">
+                        <div>
+                            <h5 class="font-bold text-xs sm:text-sm text-gray-800">${item.name}</h5>
+                            <p class="text-[11px] sm:text-xs text-gray-500">รูปแบบ: ${item.type} | ความหวาน: ${item.sweetness}</p>
+                            <p class="text-xs text-brand-orange font-semibold mt-1">${item.price} ฿ x ${item.qty} = ${item.totalPrice} ฿</p>
                         </div>
-                        <div class="flex flex-col items-end space-y-2">
-                            <button onclick="removeCartItem(${idx})" class="text-slate-400 hover:text-red-500 text-xs">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                            <div class="flex items-center space-x-2 bg-white px-2 py-1 rounded-lg border border-slate-200 text-xs font-bold">
-                                <span>x${item.qty}</span>
-                            </div>
-                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-gray-300 hover:text-red-500 text-sm p-2 active:scale-95">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 `;
             });
 
-            document.getElementById('cart-summary-qty').innerText = `${totalQty} แก้ว`;
-            document.getElementById('cart-summary-total').innerText = `฿${grandTotal}`;
+            container.innerHTML = html;
+            totalEl.innerText = `${grandTotal} ฿`;
         }
 
-        function removeCartItem(index) {
+        function removeFromCart(index) {
             cart.splice(index, 1);
-            updateCartBadge();
+            updateCartCount();
             renderCartItems();
         }
 
-        function processCheckout() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-
-            if (!name || !phone) {
-                showToast('กรุณากรอกข้อมูล', 'โปรดกรอกชื่อและเบอร์โทรศัพท์เพื่อรับคิวครับ');
-                return;
+        function updateCartCount() {
+            const count = cart.reduce((acc, item) => acc + item.qty, 0);
+            const badge = document.getElementById('cart-badge');
+            if (count > 0) {
+                badge.innerText = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
             }
+        }
 
+        // --- PAYMENT MODAL FUNCTIONS ---
+        function goToPaymentModal() {
+            if (cart.length === 0) return;
+            const grandTotal = cart.reduce((acc, item) => acc + item.totalPrice, 0);
+            document.getElementById('pay-total-price').innerText = grandTotal;
+
+            // Generate PromptPay QR code
+            const qrImg = document.getElementById('qr-code-img');
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PROMPTPAY-JYNGJUNG-${grandTotal}THB`;
+
+            closeCartModal();
+            document.getElementById('payment-modal').classList.remove('hidden');
+            startQrTimer();
+        }
+
+        function backToCartModal() {
+            closePaymentModal();
+            openCartModal();
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+            if (qrTimerInterval) clearInterval(qrTimerInterval);
+        }
+
+        function selectPaymentMethod(method) {
+            currentPayMethod = method;
+            const viewQr = document.getElementById('pay-view-qr');
+            const viewCash = document.getElementById('pay-view-cash');
+            const viewCard = document.getElementById('pay-view-card');
+
+            viewQr.classList.add('hidden');
+            viewCash.classList.add('hidden');
+            viewCard.classList.add('hidden');
+
+            if (method === 'qr') {
+                viewQr.classList.remove('hidden');
+                startQrTimer();
+            } else if (method === 'cash') {
+                viewCash.classList.remove('hidden');
+            } else if (method === 'card') {
+                viewCard.classList.remove('hidden');
+            }
+        }
+
+        function startQrTimer() {
+            if (qrTimerInterval) clearInterval(qrTimerInterval);
+            let duration = 300; // 5 mins
+            const timerDisplay = document.getElementById('qr-timer');
+
+            qrTimerInterval = setInterval(() => {
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (--duration < 0) {
+                    clearInterval(qrTimerInterval);
+                    timerDisplay.innerText = "หมดเวลา";
+                }
+            }, 1000);
+        }
+
+        function confirmPaymentAndOrder() {
             if (cart.length === 0) return;
 
-            // Generate Queue Number (e.g. Q-012)
-            const randomNum = Math.floor(Math.random() * 80) + 10;
-            const qNumber = `Q-0${randomNum}`;
+            let methodText = 'QR PromptPay';
+            if (currentPayMethod === 'cash') methodText = 'เงินสดหน้าร้าน';
+            if (currentPayMethod === 'card') methodText = 'บัตรเครดิต/เดบิต';
 
-            const grandTotal = cart.reduce((sum, item) => sum + item.totalPrice, 0);
-
-            activeQueue = {
-                queueNo: qNumber,
-                name: name,
-                phone: phone,
+            const queueNum = 'J-' + Math.floor(1000 + Math.random() * 9000);
+            const newOrder = {
+                id: queueNum,
                 items: [...cart],
-                total: grandTotal,
-                status: 1, // 1: Order Received, 2: Preparing, 3: Ready
-                timestamp: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+                total: cart.reduce((acc, item) => acc + item.totalPrice, 0),
+                paymentMethod: methodText,
+                status: 'pending',
+                time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
             };
 
-            // Clear cart & close modal
+            activeOrders.unshift(newOrder);
             cart = [];
-            updateCartBadge();
-            closeCartModal();
+            updateCartCount();
+            closePaymentModal();
 
-            // Render Queue View & Switch Tab
-            renderQueueView();
             switchTab('queue');
-
-            showToast('สั่งซื้อสำเร็จ!', `หมายเลขคิวของคุณคือ ${qNumber}`);
+            updateQueueCountBadge();
         }
 
-        function switchTab(tab) {
-            const menuView = document.getElementById('view-menu');
-            const queueView = document.getElementById('view-queue');
-            const navMenu = document.getElementById('nav-menu');
-            const navQueue = document.getElementById('nav-queue');
+        function updateQueueCountBadge() {
+            const activeCount = activeOrders.filter(o => o.status !== 'completed').length;
+            const desktopCountEl = document.getElementById('queue-count-desktop');
+            if (desktopCountEl) desktopCountEl.innerText = activeCount;
 
-            if (tab === 'menu') {
-                menuView.classList.remove('hidden');
-                queueView.classList.add('hidden');
-                navMenu.classList.add('text-brand-orange', 'font-semibold');
-                navQueue.classList.remove('text-brand-orange', 'font-semibold');
-            } else {
-                menuView.classList.add('hidden');
-                queueView.classList.remove('hidden');
-                navQueue.classList.add('text-brand-orange', 'font-semibold');
-                navMenu.classList.remove('text-brand-orange', 'font-semibold');
-                renderQueueView();
+            const mobileBadge = document.getElementById('queue-badge-mobile');
+            if (mobileBadge) {
+                if (activeCount > 0) {
+                    mobileBadge.innerText = activeCount;
+                    mobileBadge.classList.remove('hidden');
+                } else {
+                    mobileBadge.classList.add('hidden');
+                }
             }
         }
 
-        function renderQueueView() {
-            const noQueueDiv = document.getElementById('no-active-queue');
-            const queueCard = document.getElementById('active-queue-card');
-            const activeBadge = document.getElementById('active-queue-badge');
-            const mobileDot = document.getElementById('mobile-queue-dot');
+        function renderQueueList() {
+            const container = document.getElementById('queue-list');
+            updateQueueCountBadge();
 
-            if (!activeQueue) {
-                noQueueDiv.classList.remove('hidden');
-                queueCard.classList.add('hidden');
-                activeBadge.classList.add('hidden');
-                mobileDot.classList.add('hidden');
+            if (activeOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="py-10 text-center text-gray-400">
+                        <i class="fa-solid fa-receipt text-3xl mb-2 text-gray-300"></i>
+                        <p class="text-xs sm:text-sm">ยังไม่มีรายการสั่งซื้อในขณะนี้</p>
+                    </div>
+                `;
                 return;
             }
 
-            noQueueDiv.classList.add('hidden');
-            queueCard.classList.remove('hidden');
-            activeBadge.classList.remove('hidden');
-            mobileDot.classList.remove('hidden');
+            let html = '';
+            activeOrders.forEach(order => {
+                let statusBadge = '';
+                if (order.status === 'pending') {
+                    statusBadge = `<span class="bg-orange-100 text-orange-700 text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold"><i class="fa-solid fa-spinner animate-spin mr-1"></i> รอดำเนินการ</span>`;
+                } else if (order.status === 'cooking') {
+                    statusBadge = `<span class="bg-yellow-100 text-yellow-800 text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold"><i class="fa-solid fa-fire mr-1"></i> กำลังชง</span>`;
+                } else if (order.status === 'ready') {
+                    statusBadge = `<span class="bg-green-500 text-white text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold animate-pulse"><i class="fa-solid fa-circle-check mr-1"></i> พร้อมรับแล้ว!</span>`;
+                } else {
+                    statusBadge = `<span class="bg-gray-100 text-gray-600 text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold">รับสินค้าแล้ว</span>`;
+                }
 
-            document.getElementById('queue-display-number').innerText = activeQueue.queueNo;
-            document.getElementById('queue-customer-info').innerHTML = `<i class="fa-regular fa-user mr-1"></i>คุณ ${activeQueue.name} (${activeQueue.phone})`;
-            document.getElementById('queue-total-price').innerText = `฿${activeQueue.total}`;
+                let itemsDetail = order.items.map(i => `${i.name} (${i.type}, หวาน ${i.sweetness}) x${i.qty}`).join('<br>');
 
-            // Render items in queue card
-            const container = document.getElementById('queue-items-list');
-            container.innerHTML = '';
-            activeQueue.items.forEach(i => {
-                container.innerHTML += `
-                    <div class="flex justify-between items-center text-sm text-slate-700">
-                        <div>
-                            <span class="font-bold">${i.emoji} ${i.name}</span>
-                            <span class="text-xs text-slate-500 block">(${i.temp}, หวาน ${i.sweetness}${i.toppings.length ? ', ' + i.toppings.join('+') : ''}) x${i.qty}</span>
+                html += `
+                    <div class="p-3.5 sm:p-4 border border-gray-100 rounded-2xl bg-gray-50/50 hover:bg-white transition shadow-sm space-y-2">
+                        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+                            <div>
+                                <span class="text-[10px] text-gray-400">หมายเลขออเดอร์</span>
+                                <h4 class="text-base sm:text-lg font-black text-brand-blue leading-none">${order.id}</h4>
+                            </div>
+                            <div class="text-right">
+                                ${statusBadge}
+                                <p class="text-[9px] sm:text-[10px] text-gray-400 mt-1">${order.time} น.</p>
+                            </div>
                         </div>
-                        <span class="font-semibold">฿${i.totalPrice}</span>
+                        <div class="text-xs text-gray-600 leading-relaxed py-1">
+                            ${itemsDetail}
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-gray-100 text-xs">
+                            <span class="text-gray-500">ชำระผ่าน: <strong class="text-gray-700">${order.paymentMethod}</strong></span>
+                            <span class="text-gray-500">รวม: <strong class="text-brand-orange font-bold text-sm">${order.total} ฿</strong></span>
+                        </div>
                     </div>
                 `;
             });
 
-            updateQueueProgressUI(activeQueue.status);
+            container.innerHTML = html;
         }
 
-        function updateQueueProgressUI(status) {
-            const statusBadge = document.getElementById('queue-status-badge');
-            const estTime = document.getElementById('queue-estimated-time');
-            const progressBar = document.getElementById('queue-progress-bar');
-
-            const s1 = document.getElementById('step-1').querySelector('.step-circle');
-            const s2 = document.getElementById('step-2').querySelector('.step-circle');
-            const s3 = document.getElementById('step-3').querySelector('.step-circle');
-
-            if (status === 1) {
-                statusBadge.innerText = 'รับออเดอร์แล้ว';
-                statusBadge.className = 'inline-block bg-orange-500 text-white font-bold text-xs px-3 py-1 rounded-full mb-1';
-                estTime.innerHTML = '<i class="fa-regular fa-clock mr-1"></i>ประมาณ 5-10 นาที';
-                progressBar.style.width = '0%';
-
-                s1.className = 'step-circle w-10 h-10 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-sm shadow-md';
-                s2.className = 'step-circle w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 text-slate-400 flex items-center justify-center font-bold text-sm';
-                s3.className = 'step-circle w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 text-slate-400 flex items-center justify-center font-bold text-sm';
-            } else if (status === 2) {
-                statusBadge.innerText = 'กำลังชงเครื่องดื่ม';
-                statusBadge.className = 'inline-block bg-blue-500 text-white font-bold text-xs px-3 py-1 rounded-full mb-1';
-                estTime.innerHTML = '<i class="fa-solid fa-blender mr-1"></i>บาริสต้ากำลังจัดเตรียมให้คุณ...';
-                progressBar.style.width = '50%';
-
-                s1.className = 'step-circle w-10 h-10 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-sm';
-                s2.className = 'step-circle w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-md badge-pulse';
-                s3.className = 'step-circle w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-600 text-slate-400 flex items-center justify-center font-bold text-sm';
-            } else if (status === 3) {
-                statusBadge.innerText = 'พร้อมรับเครื่องดื่ม!';
-                statusBadge.className = 'inline-block bg-green-500 text-white font-bold text-xs px-3 py-1 rounded-full mb-1 animate-bounce';
-                estTime.innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-green-400"></i>เชิญรับเครื่องดื่มที่หน้าร้านได้เลยครับ';
-                progressBar.style.width = '100%';
-
-                s1.className = 'step-circle w-10 h-10 rounded-full bg-brand-orange text-white flex items-center justify-center font-bold text-sm';
-                s2.className = 'step-circle w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm';
-                s3.className = 'step-circle w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm shadow-lg badge-pulse';
-            }
-        }
-
-        function toggleAdminPanel() {
-            const panel = document.getElementById('admin-panel');
-            if (panel.classList.contains('opacity-0')) {
-                panel.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-full');
-            } else {
-                panel.classList.add('opacity-0', 'pointer-events-none', 'translate-y-full');
-            }
-        }
-
-        function adminSetStatus(status) {
-            if (!activeQueue) {
-                showToast('ยังไม่มีคิวลูกค้า', 'กรุณาสั่งซื้อเครื่องดื่มผ่านเว็บเพื่อสร้างคิวก่อนทดสอบ');
+        function demoUpdateQueue(status) {
+            if (activeOrders.length === 0) {
+                alert('โปรดสั่งซื้อเครื่องดื่มเพื่อทดสอบระบบคิวก่อนครับ');
                 return;
             }
 
-            activeQueue.status = status;
-            updateQueueProgressUI(status);
+            activeOrders[0].status = status;
+            renderQueueList();
 
-            if (status === 1) {
-                showToast('อัปเดตสถานะ', 'ร้านได้รับออเดอร์เรียบร้อยแล้ว');
-            } else if (status === 2) {
-                showToast('บาริสต้ากำลังชง...', 'เครื่องดื่มของคุณอยู่ระหว่างการเตรียม');
-            } else if (status === 3) {
-                playNotificationSound();
-                showToast('🔔 เครื่องดื่มพร้อมรับแล้ว!', `คิวหมายเลข ${activeQueue.queueNo} เชิญมารับเครื่องดื่มที่เคาน์เตอร์ครับ`);
+            if (status === 'ready') {
+                showToast(`คิวที่ ${activeOrders[0].id} ชงเสร็จเรียบร้อยแล้วครับ!`);
+                playChimeSound();
             }
         }
 
-        function playNotificationSound() {
-            try {
-                // Web Audio API Beep Synthesizer
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                const playBeep = (freq, duration, delay) => {
-                    setTimeout(() => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.value = freq;
-                        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start();
-                        osc.stop(audioCtx.currentTime + duration);
-                    }, delay);
-                };
-
-                // Play pleasant 3-tone chime
-                playBeep(523.25, 0.3, 0);   // C5
-                playBeep(659.25, 0.3, 200); // E5
-                playBeep(783.99, 0.5, 400); // G5
-            } catch (e) {
-                console.log('Audio playback prevented or unsupported');
-            }
-        }
-
-        function showToast(title, msg) {
-            const toast = document.getElementById('status-alert-toast');
-            document.getElementById('toast-title').innerText = title;
+        function showToast(msg) {
+            const toast = document.getElementById('notification-toast');
             document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('-translate-y-32', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
 
-            toast.classList.remove('translate-y-[-150%]');
-            setTimeout(() => {
-                toast.classList.add('translate-y-[-150%]');
-            }, 4000);
+            setTimeout(() => { closeToast(); }, 6000);
+        }
+
+        function closeToast() {
+            const toast = document.getElementById('notification-toast');
+            toast.classList.add('-translate-y-32', 'opacity-0', 'pointer-events-none');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+        }
+
+        function playChimeSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(523.25, now);
+                gain1.gain.setValueAtTime(0.3, now);
+                gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                osc1.start(now);
+                osc1.stop(now + 0.5);
+
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(659.25, now + 0.15);
+                gain2.gain.setValueAtTime(0.3, now + 0.15);
+                gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.start(now + 0.15);
+                osc2.stop(now + 0.8);
+            } catch (e) {
+                console.log('Audio error:', e);
+            }
         }
     </script>
 </body>
